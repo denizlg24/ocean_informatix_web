@@ -104,13 +104,13 @@ export default function Contact() {
 
             <div className="space-y-4 pt-2">
               <a
-                href="mailto:hello@oceaninformatix.com"
+                href="mailto:geral@oceaninformatix.com"
                 className="flex items-center gap-3 text-sm text-muted-foreground hover:text-ocean-600 transition-colors duration-150 group"
               >
                 <span className="w-8 h-8 rounded-full bg-ocean-100 flex items-center justify-center text-ocean-500 group-hover:bg-ocean-200 transition-colors duration-150 shrink-0">
                   <Mail className="size-3.5" />
                 </span>
-                hello@oceaninformatix.com
+                geral@oceaninformatix.com
               </a>
               <div className="flex items-center gap-3 text-sm text-muted-foreground">
                 <span className="w-8 h-8 rounded-full bg-ocean-100 flex items-center justify-center text-ocean-500 shrink-0">
@@ -153,7 +153,7 @@ export default function Contact() {
             transition={{ duration: 0.6, delay: 0.18 }}
           >
             {status === "success" ? (
-              <div className="h-full min-h-64 flex flex-col items-start justify-center space-y-5 py-8">
+              <div className="min-h-[480px] flex flex-col items-center justify-center space-y-5 text-center">
                 <motion.div
                   initial={{ scale: 0.8, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
