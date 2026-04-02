@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { motion } from "motion/react";
 import { ArrowRight, Check, Loader2, Mail, MapPin } from "lucide-react";
+import { useIntlayer } from "react-intlayer";
+import { useLocale } from "next-intlayer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -15,14 +17,6 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 
-const serviceOptions = [
-  "Web Application",
-  "Digital Platform",
-  "Custom Software",
-  "Technical Consulting",
-  "Other",
-];
-
 type FormState = {
   name: string;
   email: string;
@@ -34,6 +28,8 @@ type FormState = {
 type Status = "idle" | "loading" | "success" | "error";
 
 export default function Contact() {
+  const content = useIntlayer("contact");
+  const { locale } = useLocale();
   const [form, setForm] = useState<FormState>({
     name: "",
     email: "",
@@ -58,7 +54,7 @@ export default function Contact() {
       const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify({ ...form, locale }),
       });
 
       if (!res.ok) {
@@ -70,7 +66,9 @@ export default function Contact() {
       setForm({ name: "", email: "", company: "", service: "", message: "" });
     } catch (err) {
       setStatus("error");
-      setErrorMsg(err instanceof Error ? err.message : "Something went wrong. Please try again.");
+      setErrorMsg(
+        err instanceof Error ? err.message : "Something went wrong."
+      );
     }
   };
 
@@ -78,7 +76,6 @@ export default function Contact() {
     <section id="contact" className="py-24 lg:py-36 bg-ocean-50/40">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <div className="grid lg:grid-cols-[1fr_1.1fr] gap-16 lg:gap-24">
-          {/* Left — info */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -88,18 +85,17 @@ export default function Contact() {
           >
             <div>
               <span className="text-xs font-semibold tracking-[0.22em] uppercase text-ocean-500 block mb-4">
-                Get in touch
+                {content.sectionLabel}
               </span>
               <h2 className="font-serif text-4xl lg:text-[3.25rem] text-foreground leading-tight">
-                Let&apos;s build
+                {content.headingLine1}
                 <br />
-                <span className="italic text-gradient-ocean">something great.</span>
+                <span className="italic text-gradient-ocean">{content.headingLine2}</span>
               </h2>
             </div>
 
             <p className="text-muted-foreground leading-relaxed max-w-sm text-base">
-              Ready to start your next project? Tell us what you&apos;re working on and
-              we&apos;ll be in touch within 24 hours.
+              {content.description}
             </p>
 
             <div className="space-y-4 pt-2">
@@ -110,17 +106,16 @@ export default function Contact() {
                 <span className="w-8 h-8 rounded-full bg-ocean-100 flex items-center justify-center text-ocean-500 group-hover:bg-ocean-200 transition-colors duration-150 shrink-0">
                   <Mail className="size-3.5" />
                 </span>
-                geral@oceaninformatix.com
+                {content.emailLabel}
               </a>
               <div className="flex items-center gap-3 text-sm text-muted-foreground">
                 <span className="w-8 h-8 rounded-full bg-ocean-100 flex items-center justify-center text-ocean-500 shrink-0">
                   <MapPin className="size-3.5" />
                 </span>
-                Porto, Portugal
+                {content.locationLabel}
               </div>
             </div>
 
-            {/* Decorative wave line */}
             <svg
               viewBox="0 0 200 40"
               fill="none"
@@ -145,7 +140,6 @@ export default function Contact() {
             </svg>
           </motion.div>
 
-          {/* Right — form */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -153,7 +147,7 @@ export default function Contact() {
             transition={{ duration: 0.6, delay: 0.18 }}
           >
             {status === "success" ? (
-              <div className="min-h-[480px] flex flex-col items-center justify-center space-y-5 text-center">
+              <div className="min-h-120 flex flex-col items-center justify-center space-y-5 text-center">
                 <motion.div
                   initial={{ scale: 0.8, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
@@ -168,17 +162,15 @@ export default function Contact() {
                   transition={{ duration: 0.4, delay: 0.15 }}
                   className="space-y-2"
                 >
-                  <h3 className="font-serif text-2xl text-foreground">Message sent.</h3>
-                  <p className="text-muted-foreground text-sm">
-                    We&apos;ll be in touch within 1–2 business days.
-                  </p>
+                  <h3 className="font-serif text-2xl text-foreground">{content.successHeading}</h3>
+                  <p className="text-muted-foreground text-sm">{content.successDescription}</p>
                 </motion.div>
                 <Button
                   variant="outline"
                   className="rounded-full mt-2 border-ocean-200 hover:bg-ocean-50 hover:border-ocean-300"
                   onClick={() => setStatus("idle")}
                 >
-                  Send another message
+                  {content.sendAnother}
                 </Button>
               </div>
             ) : (
@@ -189,13 +181,13 @@ export default function Contact() {
                       htmlFor="name"
                       className="text-[11px] tracking-[0.12em] uppercase font-semibold text-muted-foreground"
                     >
-                      Name <span className="text-ocean-400">*</span>
+                      {content.labelName} <span className="text-ocean-400">*</span>
                     </Label>
                     <Input
                       id="name"
                       value={form.name}
                       onChange={updateField("name")}
-                      placeholder="João Silva"
+                      placeholder={content.placeholderName.value}
                       required
                       className="bg-white border-border focus-visible:ring-ocean-400/50 focus-visible:border-ocean-400"
                     />
@@ -205,14 +197,14 @@ export default function Contact() {
                       htmlFor="email"
                       className="text-[11px] tracking-[0.12em] uppercase font-semibold text-muted-foreground"
                     >
-                      Email <span className="text-ocean-400">*</span>
+                      {content.labelEmail} <span className="text-ocean-400">*</span>
                     </Label>
                     <Input
                       id="email"
                       type="email"
                       value={form.email}
                       onChange={updateField("email")}
-                      placeholder="joao@company.com"
+                      placeholder={content.placeholderEmail.value}
                       required
                       className="bg-white border-border focus-visible:ring-ocean-400/50 focus-visible:border-ocean-400"
                     />
@@ -224,13 +216,13 @@ export default function Contact() {
                     htmlFor="company"
                     className="text-[11px] tracking-[0.12em] uppercase font-semibold text-muted-foreground"
                   >
-                    Company
+                    {content.labelCompany}
                   </Label>
                   <Input
                     id="company"
                     value={form.company}
                     onChange={updateField("company")}
-                    placeholder="Your company (optional)"
+                    placeholder={content.placeholderCompany.value}
                     className="bg-white border-border focus-visible:ring-ocean-400/50 focus-visible:border-ocean-400"
                   />
                 </div>
@@ -240,25 +232,23 @@ export default function Contact() {
                     htmlFor="service"
                     className="text-[11px] tracking-[0.12em] uppercase font-semibold text-muted-foreground"
                   >
-                    I&apos;m interested in <span className="text-ocean-400">*</span>
+                    {content.labelServiceInterest} <span className="text-ocean-400">*</span>
                   </Label>
                   <Select
                     value={form.service}
-                    
                     onValueChange={(val) => setForm((prev) => ({ ...prev, service: val ?? "" }))}
                     required
                   >
                     <SelectTrigger
                       id="service"
-                      
                       className="w-full bg-white border-border focus:ring-ocean-400/50"
                     >
-                      <SelectValue placeholder="Select a service" />
+                      <SelectValue placeholder={content.placeholderSelectService.value} />
                     </SelectTrigger>
                     <SelectContent alignItemWithTrigger={false}>
-                      {serviceOptions.map((s) => (
-                        <SelectItem key={s} value={s}>
-                          {s}
+                      {content.serviceOptions.map((s, i) => (
+                        <SelectItem key={i} value={s.value}>
+                          {s.value}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -270,13 +260,13 @@ export default function Contact() {
                     htmlFor="message"
                     className="text-[11px] tracking-[0.12em] uppercase font-semibold text-muted-foreground"
                   >
-                    Message <span className="text-ocean-400">*</span>
+                    {content.labelMessage} <span className="text-ocean-400">*</span>
                   </Label>
                   <Textarea
                     id="message"
                     value={form.message}
                     onChange={updateField("message")}
-                    placeholder="Tell us about your project, timeline, and goals..."
+                    placeholder={content.placeholderMessage.value}
                     rows={5}
                     required
                     className="bg-white border-border focus-visible:ring-ocean-400/50 focus-visible:border-ocean-400 resize-none"
@@ -302,11 +292,11 @@ export default function Contact() {
                   {status === "loading" ? (
                     <>
                       <Loader2 className="size-4 animate-spin" />
-                      Sending...
+                      {content.submitting}
                     </>
                   ) : (
                     <>
-                      Send message
+                      {content.submitButton}
                       <ArrowRight className="size-4" />
                     </>
                   )}

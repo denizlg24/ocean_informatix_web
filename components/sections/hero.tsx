@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { motion } from "motion/react";
 import { ArrowDown, ArrowRight, ChevronDown } from "lucide-react";
+import { useIntlayer } from "react-intlayer";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -29,7 +30,6 @@ function OceanAnimation() {
 
       <circle cx="310" cy="310" r="260" fill="url(#center-glow)" />
 
-      {/* Concentric rings */}
       {[240, 175, 108].map((r, i) => (
         <motion.circle
           key={r}
@@ -45,7 +45,6 @@ function OceanAnimation() {
         />
       ))}
 
-      {/* Wave 1 */}
       <motion.path
         d="M 40 360 C 120 280, 210 430, 310 330 C 410 230, 500 390, 580 310"
         stroke="#0ea5e9"
@@ -63,7 +62,6 @@ function OceanAnimation() {
         transition={{ duration: 11, repeat: Infinity, ease: "easeInOut" }}
       />
 
-      {/* Wave 2 */}
       <motion.path
         d="M 40 410 C 130 330, 220 470, 320 390 C 420 310, 510 440, 580 370"
         stroke="#38bdf8"
@@ -81,7 +79,6 @@ function OceanAnimation() {
         transition={{ duration: 13, repeat: Infinity, ease: "easeInOut", delay: 1.8 }}
       />
 
-      {/* Wave 3 — subtle */}
       <motion.path
         d="M 40 290 C 140 230, 240 340, 310 280 C 390 220, 470 310, 580 260"
         stroke="#0369a1"
@@ -99,7 +96,6 @@ function OceanAnimation() {
         transition={{ duration: 9, repeat: Infinity, ease: "easeInOut", delay: 0.6 }}
       />
 
-      {/* Diamond accent */}
       <motion.path
         d="M 310 255 L 355 310 L 310 365 L 265 310 Z"
         stroke="#0ea5e9"
@@ -117,7 +113,6 @@ function OceanAnimation() {
         transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
       />
 
-      {/* Center dot */}
       <motion.circle
         cx="310"
         cy="310"
@@ -128,7 +123,6 @@ function OceanAnimation() {
         transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
       />
 
-      {/* Accent lines */}
       <motion.line
         x1="430" y1="100" x2="555" y2="225"
         stroke="#0369a1" strokeWidth="1" strokeOpacity="0.18" strokeLinecap="round"
@@ -142,7 +136,6 @@ function OceanAnimation() {
         transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 1 }}
       />
 
-      {/* Floating dots */}
       {dots.map((dot, i) => (
         <motion.circle
           key={i}
@@ -179,19 +172,20 @@ const fadeUp = {
 };
 
 export default function Hero() {
+  const content = useIntlayer("hero");
+
   return (
     <section className="relative min-h-screen flex flex-col overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-br from-background via-background to-ocean-100/50 pointer-events-none" />
+      <div className="absolute inset-0 bg-linear-to-br from-background via-background to-ocean-100/50 pointer-events-none" />
       <div className="absolute inset-0 bg-grid-ocean pointer-events-none opacity-60" />
 
       <div className="relative z-10 flex-1 flex items-center">
         <div className="max-w-7xl w-full mx-auto px-6 lg:px-8 pt-24 pb-16 grid lg:grid-cols-[1fr_1fr] gap-12 xl:gap-20 items-center">
-          {/* Text content */}
           <div className="space-y-8 text-center lg:text-left">
             <motion.div variants={fadeUp} initial="hidden" animate="show" custom={0.1}>
               <span className="inline-flex items-center justify-center lg:justify-start gap-3 text-xs font-semibold tracking-[0.22em] uppercase text-ocean-600">
                 <span className="block w-8 h-px bg-ocean-400" />
-                Porto · Portugal
+                {content.location}
               </span>
             </motion.div>
 
@@ -203,16 +197,16 @@ export default function Hero() {
                 animate="show"
                 custom={0.22}
               >
-                We craft digital
+                {content.headingLine1}
               </motion.h1>
               <motion.h1
-                className="font-serif italic text-5xl sm:text-6xl xl:text-[4.5rem] leading-[1.04] text-gradient-ocean"
+                className="font-serif italic text-5xl sm:text-6xl xl:text-[4.5rem] leading-[1.04] text-gradient-ocean pb-2"
                 variants={fadeUp}
                 initial="hidden"
                 animate="show"
                 custom={0.36}
               >
-                infrastructure.
+                {content.headingLine2}
               </motion.h1>
             </div>
 
@@ -223,8 +217,7 @@ export default function Hero() {
               animate="show"
               custom={0.5}
             >
-              From concept to production — we build web applications and platforms
-              that scale with your ambitions.
+              {content.description}
             </motion.p>
 
             <motion.div
@@ -241,7 +234,7 @@ export default function Hero() {
                   "rounded-full px-8 bg-clip-border shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-shadow"
                 )}
               >
-                Start a project
+                {content.ctaPrimary}
                 <ArrowRight className="ml-2 size-4" />
               </Link>
               <Link
@@ -251,21 +244,19 @@ export default function Hero() {
                   "rounded-full px-8 text-foreground hover:bg-ocean-50"
                 )}
               >
-                Explore services
+                {content.ctaSecondary}
                 <ArrowDown className="ml-2 size-4 text-ocean-400" />
               </Link>
             </motion.div>
           </div>
 
-          {/* Animated illustration — hidden on mobile */}
           <motion.div
-            className="relative hidden lg:block h-[540px]"
+            className="relative hidden lg:block h-135"
             initial={{ opacity: 0, scale: 0.94 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 1.3, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
           >
             <OceanAnimation />
-            {/* Large faded monogram */}
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none">
               <span className="font-serif text-[18rem] font-normal text-ocean-100/60 leading-none">
                 OI
@@ -275,7 +266,6 @@ export default function Hero() {
         </div>
       </div>
 
-      {/* Scroll indicator */}
       <motion.div
         className="relative z-10 pb-8 flex justify-center"
         initial={{ opacity: 0 }}
@@ -287,7 +277,7 @@ export default function Hero() {
           animate={{ y: [0, 8, 0] }}
           transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
         >
-          <span className="text-[10px] tracking-[0.25em] uppercase">Scroll</span>
+          <span className="text-[10px] tracking-[0.25em] uppercase">{content.scroll}</span>
           <ChevronDown className="size-4" />
         </motion.div>
       </motion.div>

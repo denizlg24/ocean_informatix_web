@@ -10,7 +10,78 @@ interface ContactBody {
   company?: string;
   service: string;
   message: string;
+  locale?: string;
 }
+
+type Locale = "en" | "pt";
+
+const emailStrings: Record<
+  Locale,
+  {
+    confirmSubject: string;
+    heading: string;
+    greeting: (name: string) => string;
+    body: string;
+    timeframe: string;
+    meanwhileTitle: string;
+    meanwhileBody: string;
+    regards: string;
+    teamName: string;
+    footer: string;
+    notifySubject: (name: string, service: string) => string;
+    notifyHeading: string;
+    notifyLabel: string;
+    fieldName: string;
+    fieldEmail: string;
+    fieldCompany: string;
+    fieldService: string;
+    fieldMessage: string;
+  }
+> = {
+  en: {
+    confirmSubject: "We received your message — Ocean Informatix",
+    heading: "Message received.",
+    greeting: (name) => `Hi ${name},`,
+    body: "Thank you for reaching out. We've received your message and one of our team members will be in touch within",
+    timeframe: "1–2 business days",
+    meanwhileTitle: "In the meantime",
+    meanwhileBody:
+      "You can learn more about our services and approach on our website at",
+    regards: "Warm regards,",
+    teamName: "The Ocean Informatix Team",
+    footer: "Ocean Informatix · Porto, Portugal",
+    notifySubject: (name, service) => `New enquiry from ${name} — ${service}`,
+    notifyHeading: "Contact Form Submission",
+    notifyLabel: "New Enquiry",
+    fieldName: "Name",
+    fieldEmail: "Email",
+    fieldCompany: "Company",
+    fieldService: "Service Interest",
+    fieldMessage: "Message",
+  },
+  "pt": {
+    confirmSubject: "Recebemos a sua mensagem — Ocean Informatix",
+    heading: "Mensagem recebida.",
+    greeting: (name) => `Olá ${name},`,
+    body: "Obrigado por nos contactar. Recebemos a sua mensagem e um membro da nossa equipa entrará em contacto dentro de",
+    timeframe: "1–2 dias úteis",
+    meanwhileTitle: "Entretanto",
+    meanwhileBody:
+      "Pode saber mais sobre os nossos serviços e abordagem no nosso website em",
+    regards: "Com os melhores cumprimentos,",
+    teamName: "A Equipa Ocean Informatix",
+    footer: "Ocean Informatix · Porto, Portugal",
+    notifySubject: (name, service) =>
+      `Novo pedido de ${name} — ${service}`,
+    notifyHeading: "Submissão de Formulário de Contacto",
+    notifyLabel: "Novo Pedido",
+    fieldName: "Nome",
+    fieldEmail: "Email",
+    fieldCompany: "Empresa",
+    fieldService: "Serviço de Interesse",
+    fieldMessage: "Mensagem",
+  },
+};
 
 function escapeHtml(str: string): string {
   return str
@@ -21,14 +92,21 @@ function escapeHtml(str: string): string {
     .replace(/'/g, "&#039;");
 }
 
-function buildConfirmationEmail(name: string): string {
+function getLocaleStrings(locale?: string) {
+  if (locale === "pt") return emailStrings["pt"];
+  return emailStrings.en;
+}
+
+function buildConfirmationEmail(name: string, locale?: string): string {
   const safeName = escapeHtml(name);
+  const s = getLocaleStrings(locale);
+
   return `<!DOCTYPE html>
-<html lang="en">
+<html lang="${locale === "pt" ? "pt" : "en"}">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ocean Informatix — Message Received</title>
+  <title>Ocean Informatix</title>
 </head>
 <body style="margin:0;padding:0;background-color:#f0f9ff;font-family:Arial,Helvetica,sans-serif;">
   <table width="100%" cellpadding="0" cellspacing="0" style="background:#f0f9ff;padding:40px 20px;">
@@ -41,41 +119,40 @@ function buildConfirmationEmail(name: string): string {
                 Ocean Informatix
               </p>
               <h1 style="margin:0;color:#ffffff;font-size:30px;font-weight:700;line-height:1.2;">
-                Message received.
+                ${s.heading}
               </h1>
             </td>
           </tr>
           <tr>
             <td style="background:#ffffff;padding:48px;border-radius:0 0 12px 12px;border:1px solid #e0f2fe;border-top:none;">
               <p style="margin:0 0 16px;color:#0f172a;font-size:16px;line-height:1.6;">
-                Hi ${safeName},
+                ${s.greeting(safeName)}
               </p>
               <p style="margin:0 0 24px;color:#475569;font-size:15px;line-height:1.7;">
-                Thank you for reaching out. We've received your message and one of our
-                team members will be in touch within
-                <strong style="color:#0f172a;">1–2 business days</strong>.
+                ${s.body}
+                <strong style="color:#0f172a;"> ${s.timeframe}</strong>.
               </p>
               <div style="background:#f0f9ff;border-left:3px solid #0ea5e9;padding:20px 24px;border-radius:0 8px 8px 0;margin:24px 0;">
                 <p style="margin:0;color:#0369a1;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:1px;">
-                  In the meantime
+                  ${s.meanwhileTitle}
                 </p>
                 <p style="margin:8px 0 0;color:#475569;font-size:14px;line-height:1.6;">
-                  You can learn more about our services and approach on our website at
+                  ${s.meanwhileBody}
                   <a href="https://oceaninformatix.com" style="color:#0ea5e9;text-decoration:none;">
                     oceaninformatix.com
                   </a>.
                 </p>
               </div>
               <p style="margin:24px 0 0;color:#475569;font-size:15px;line-height:1.7;">
-                Warm regards,<br />
-                <strong style="color:#0f172a;">The Ocean Informatix Team</strong>
+                ${s.regards}<br />
+                <strong style="color:#0f172a;">${s.teamName}</strong>
               </p>
             </td>
           </tr>
           <tr>
             <td style="padding:28px 0 0;text-align:center;">
               <p style="margin:0;color:#94a3b8;font-size:12px;">
-                Ocean Informatix &middot; Porto, Portugal
+                ${s.footer}
               </p>
             </td>
           </tr>
@@ -88,6 +165,7 @@ function buildConfirmationEmail(name: string): string {
 }
 
 function buildNotificationEmail(data: ContactBody): string {
+  const s = getLocaleStrings(data.locale);
   const safe = {
     name: escapeHtml(data.name),
     email: escapeHtml(data.email),
@@ -108,10 +186,10 @@ function buildNotificationEmail(data: ContactBody): string {
     <tr>
       <td style="background:#0f172a;padding:28px 32px;">
         <p style="margin:0 0 6px;color:#0ea5e9;font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:600;">
-          New Enquiry
+          ${s.notifyLabel}
         </p>
         <h2 style="margin:0;color:#ffffff;font-size:22px;font-weight:700;">
-          Contact Form Submission
+          ${s.notifyHeading}
         </h2>
       </td>
     </tr>
@@ -121,7 +199,7 @@ function buildNotificationEmail(data: ContactBody): string {
           <tr>
             <td style="padding:12px 0;border-bottom:1px solid #e0f2fe;">
               <p style="margin:0;color:#94a3b8;font-size:11px;text-transform:uppercase;letter-spacing:1px;font-weight:600;">
-                Name
+                ${s.fieldName}
               </p>
               <p style="margin:5px 0 0;color:#0f172a;font-size:15px;font-weight:600;">
                 ${safe.name}
@@ -131,7 +209,7 @@ function buildNotificationEmail(data: ContactBody): string {
           <tr>
             <td style="padding:12px 0;border-bottom:1px solid #e0f2fe;">
               <p style="margin:0;color:#94a3b8;font-size:11px;text-transform:uppercase;letter-spacing:1px;font-weight:600;">
-                Email
+                ${s.fieldEmail}
               </p>
               <p style="margin:5px 0 0;font-size:15px;">
                 <a href="mailto:${safe.email}" style="color:#0ea5e9;text-decoration:none;">
@@ -145,7 +223,7 @@ function buildNotificationEmail(data: ContactBody): string {
               ? `<tr>
             <td style="padding:12px 0;border-bottom:1px solid #e0f2fe;">
               <p style="margin:0;color:#94a3b8;font-size:11px;text-transform:uppercase;letter-spacing:1px;font-weight:600;">
-                Company
+                ${s.fieldCompany}
               </p>
               <p style="margin:5px 0 0;color:#0f172a;font-size:15px;">${safe.company}</p>
             </td>
@@ -155,7 +233,7 @@ function buildNotificationEmail(data: ContactBody): string {
           <tr>
             <td style="padding:12px 0;border-bottom:1px solid #e0f2fe;">
               <p style="margin:0;color:#94a3b8;font-size:11px;text-transform:uppercase;letter-spacing:1px;font-weight:600;">
-                Service Interest
+                ${s.fieldService}
               </p>
               <p style="margin:5px 0 0;color:#0f172a;font-size:15px;">${safe.service}</p>
             </td>
@@ -163,7 +241,7 @@ function buildNotificationEmail(data: ContactBody): string {
           <tr>
             <td style="padding:16px 0 0;">
               <p style="margin:0;color:#94a3b8;font-size:11px;text-transform:uppercase;letter-spacing:1px;font-weight:600;">
-                Message
+                ${s.fieldMessage}
               </p>
               <p style="margin:8px 0 0;color:#0f172a;font-size:15px;line-height:1.7;white-space:pre-wrap;">
                 ${safe.message}
@@ -187,7 +265,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
   }
 
-  const { name, email, service, message } = body;
+  const { name, email, service, message, locale } = body;
 
   if (!name?.trim() || !email?.trim() || !service?.trim() || !message?.trim()) {
     return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
@@ -206,19 +284,20 @@ export async function POST(request: NextRequest) {
   }
 
   const resend = new Resend(process.env.RESEND_API_KEY);
+  const s = getLocaleStrings(locale);
 
   try {
     await Promise.all([
       resend.emails.send({
         from: FROM_EMAIL,
         to: email,
-        subject: "We received your message — Ocean Informatix",
-        html: buildConfirmationEmail(name),
+        subject: s.confirmSubject,
+        html: buildConfirmationEmail(name, locale),
       }),
       resend.emails.send({
         from: FROM_EMAIL,
         to: COMPANY_EMAIL,
-        subject: `New enquiry from ${name} — ${service}`,
+        subject: s.notifySubject(name, service),
         html: buildNotificationEmail(body),
       }),
     ]);

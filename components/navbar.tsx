@@ -3,20 +3,23 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { AnimatePresence, motion } from "motion/react";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { useIntlayer } from "react-intlayer";
+import { buttonVariants } from "@/components/ui/button";
 import { OceanLogo } from "@/components/logo";
+import { LocaleSwitcher } from "@/components/locale-switcher";
 import { cn } from "@/lib/utils";
 
-const navLinks = [
-  { label: "Services", href: "#services" },
-  { label: "Process", href: "#process" },
-  { label: "About", href: "#about" },
-  { label: "Contact", href: "#contact" },
-];
-
 export default function Navbar() {
+  const content = useIntlayer("navbar");
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+
+  const navLinks = [
+    { label: content.services, href: "#services" },
+    { label: content.process, href: "#process" },
+    { label: content.about, href: "#about" },
+    { label: content.contact, href: "#contact" },
+  ];
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -55,38 +58,42 @@ export default function Navbar() {
             ))}
           </ul>
 
-          <div className="hidden md:flex">
+          <div className="hidden md:flex items-center gap-3">
+            <LocaleSwitcher />
             <Link
               href="#contact"
               className={cn(buttonVariants({ size: "sm" }), "rounded-full px-5 bg-clip-border")}
             >
-              Start a project
+              {content.cta}
             </Link>
           </div>
 
-          <button
-            type="button"
-            className="md:hidden flex flex-col gap-1.5 p-2 -mr-2"
-            onClick={() => setMenuOpen((o) => !o)}
-            aria-label="Toggle menu"
-            aria-expanded={menuOpen}
-          >
-            <motion.span
-              animate={menuOpen ? { rotate: 45, y: 8 } : { rotate: 0, y: 0 }}
-              transition={{ duration: 0.2 }}
-              className="block w-6 h-0.5 bg-foreground origin-center"
-            />
-            <motion.span
-              animate={menuOpen ? { opacity: 0, scaleX: 0 } : { opacity: 1, scaleX: 1 }}
-              transition={{ duration: 0.15 }}
-              className="block w-6 h-0.5 bg-foreground"
-            />
-            <motion.span
-              animate={menuOpen ? { rotate: -45, y: -8 } : { rotate: 0, y: 0 }}
-              transition={{ duration: 0.2 }}
-              className="block w-6 h-0.5 bg-foreground origin-center"
-            />
-          </button>
+          <div className="flex items-center gap-2 md:hidden">
+            <LocaleSwitcher />
+            <button
+              type="button"
+              className="flex flex-col gap-1.5 p-2 -mr-2"
+              onClick={() => setMenuOpen((o) => !o)}
+              aria-label="Toggle menu"
+              aria-expanded={menuOpen}
+            >
+              <motion.span
+                animate={menuOpen ? { rotate: 45, y: 8 } : { rotate: 0, y: 0 }}
+                transition={{ duration: 0.2 }}
+                className="block w-6 h-0.5 bg-foreground origin-center"
+              />
+              <motion.span
+                animate={menuOpen ? { opacity: 0, scaleX: 0 } : { opacity: 1, scaleX: 1 }}
+                transition={{ duration: 0.15 }}
+                className="block w-6 h-0.5 bg-foreground"
+              />
+              <motion.span
+                animate={menuOpen ? { rotate: -45, y: -8 } : { rotate: 0, y: 0 }}
+                transition={{ duration: 0.2 }}
+                className="block w-6 h-0.5 bg-foreground origin-center"
+              />
+            </button>
+          </div>
         </nav>
       </header>
 
@@ -115,7 +122,7 @@ export default function Navbar() {
                 className={cn(buttonVariants(), "rounded-full mt-4 w-full bg-clip-border")}
                 onClick={() => setMenuOpen(false)}
               >
-                Start a project
+                {content.cta}
               </Link>
             </nav>
           </motion.div>

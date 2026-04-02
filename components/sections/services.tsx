@@ -2,39 +2,11 @@
 
 import { motion } from "motion/react";
 import { ArrowRight } from "lucide-react";
-
-const services = [
-  {
-    num: "01",
-    title: "Web Applications",
-    description:
-      "Custom-built applications that perform at scale. From single-page apps to complex multi-tier systems — we engineer for reliability.",
-    tags: ["React", "Next.js", "TypeScript"],
-  },
-  {
-    num: "02",
-    title: "Digital Platforms",
-    description:
-      "Multi-sided platforms, SaaS products, and marketplaces built with the architecture to grow without breaking.",
-    tags: ["Architecture", "APIs", "Infrastructure"],
-  },
-  {
-    num: "03",
-    title: "Custom Software",
-    description:
-      "Bespoke software for complex business problems that off-the-shelf products simply cannot solve.",
-    tags: ["Backend", "Integrations", "Automation"],
-  },
-  {
-    num: "04",
-    title: "Technical Consulting",
-    description:
-      "Strategic guidance on technology decisions, architecture reviews, and engineering team augmentation.",
-    tags: ["Strategy", "Code Review", "Mentoring"],
-  },
-];
+import { useIntlayer } from "react-intlayer";
 
 export default function Services() {
+  const content = useIntlayer("services");
+
   return (
     <section id="services" className="py-24 lg:py-36">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
@@ -47,17 +19,17 @@ export default function Services() {
         >
           <div>
             <span className="text-xs font-semibold tracking-[0.22em] uppercase text-ocean-500 block mb-4">
-              What we build
+              {content.sectionLabel}
             </span>
             <h2 className="font-serif text-4xl lg:text-[3.25rem] text-foreground leading-tight">
-              Services
+              {content.heading}
             </h2>
           </div>
           <div className="hidden lg:block flex-1 h-px bg-border ml-12 mb-3" />
         </motion.div>
 
         <div className="divide-y divide-border">
-          {services.map((service, i) => (
+          {content.items.map((service, i) => (
             <motion.div
               key={service.num}
               initial={{ opacity: 0, y: 20 }}
@@ -66,12 +38,10 @@ export default function Services() {
               transition={{ duration: 0.5, delay: i * 0.08 }}
               className="group grid grid-cols-[56px_1fr_32px] sm:grid-cols-[80px_1fr_40px] lg:grid-cols-[100px_1fr_40px] gap-4 lg:gap-8 items-start py-9 lg:py-11 -mx-6 px-6 hover:bg-ocean-50/60 transition-colors duration-200 cursor-default"
             >
-              {/* Number */}
               <span className="font-serif text-3xl sm:text-4xl lg:text-5xl text-border group-hover:text-ocean-200 transition-colors duration-300 leading-none pt-1 select-none">
                 {service.num}
               </span>
 
-              {/* Content */}
               <div className="space-y-3">
                 <h3 className="font-semibold text-xl lg:text-2xl text-foreground group-hover:text-ocean-700 transition-colors duration-200">
                   {service.title}
@@ -91,7 +61,6 @@ export default function Services() {
                 </div>
               </div>
 
-              {/* Arrow */}
               <div className="text-ocean-200 group-hover:text-ocean-500 transition-all duration-200 group-hover:translate-x-1 mt-1">
                 <ArrowRight className="size-5" />
               </div>
